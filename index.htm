@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove} from "https://www.gstatic.com/firebasejs/9.9.2/firebase-database.js";
         const firebaseConfig = {
           apiKey: "AIzaSyA1ZGALCip01oCMQ8Kc9Pv8ade4SECUG4Y",
           authDomain: "todo-34196.firebaseapp.com",
@@ -21,43 +21,52 @@
         };
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        
         submit.addEventListener('click', (e)=>{
             set(push(ref(database, '/')), {
                 todo: document.getElementById('plan').value
             });
         });
-
-        onValue(ref(database, '/'), (snapshot)=>{
-            snapshot.forEach((childSnapshot)=>{
-                const childkey = childSnapshot.key;
-                const childData = childSnapshot.val();
-
-                console.log(childkey);
-                console.log(childData);
-            });
-            document.getElementBYID('todo_list').innerHTML = listData;
+       /* btnDelete.addEventListener('click', (e)=>{
+            remove(ref(database, '/'));
         });
+*/
+       onValue(ref(database, "/"), (snapshot)=>{
+            snapshot.forEach((childSnapshot)=>{
+            console.log(childSnapshot.key);
+            console.log(childSnapshot.val().todo);
+
+            let div = document.createElement('div');
+            div.setAttribute('class', 'card card-body mt-3');
+            div.setAttribute('id', 'div'+childSnapshot.key);
+            document.getElementById('todo_list').appendChild(div);
+
+            let div2 = document.createElement('div');
+            div2.setAttribute('id', 'div2'+childSnapshot.key);
+            document.getElementById('div'+childSnapshot.key).appendChild(div2);
+
+            let span = document.createElement('span');
+            let spanText = document.createTextNode(childSnapshot.val().todo);
+            span.appendChild(spanText);
+            document.getElementById('div2'+childSnapshot.key).appendChild(span);
+            });
+       });
       </script>
 </head>
+
 <body>
     <div class="container mt-3">
         <h3>todo_list</h3>
         <div class="card card-body mt-3">
             <div>
-                잠자기
+                <span>잠자기</span> 
                 <button type="button" class="btn btn-primary float-end">삭제</button>
             </div>
         </div>
         <div id="todo_list"></div>
         <div class="mt-3">
             <input type="text" id="plan" class="form-control mt-1" placeholder="할일을 입력하세요">
-            <button type="submit" id="submit" class="btn btn-primary mt-1">입력하기</button>
-
-            
+            <button type="submit" id="submit" class="btn btn-primary mt-1">입력하기</button>   
         </div>
-        
     </div>
-    
 </body>
 </html>
