@@ -7,54 +7,48 @@
     <title>Document</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove} from "https://www.gstatic.com/firebasejs/9.9.2/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, get, child} from "https://www.gstatic.com/firebasejs/9.9.2/firebase-database.js";
         const firebaseConfig = {
-    apiKey: "AIzaSyBHH-Ixzt4XOC9zxGP-8RiXyS4uH4a47B0",
-    authDomain: "reservation-13f4e.firebaseapp.com",
-    projectId: "reservation-13f4e",
-    storageBucket: "reservation-13f4e.appspot.com",
-    messagingSenderId: "446218746486",
-    appId: "1:446218746486:web:175855f61cbf57a258fd57"
-  };
+            apiKey: "AIzaSyBHH-Ixzt4XOC9zxGP-8RiXyS4uH4a47B0",
+            authDomain: "reservation-13f4e.firebaseapp.com",
+            projectId: "reservation-13f4e",
+            storageBucket: "reservation-13f4e.appspot.com",
+            messagingSenderId: "446218746486",
+            appId: "1:446218746486:web:175855f61cbf57a258fd57"
+        };
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-    submit.addEventListener('click', (e)=>{
-        addData();
-    });
-    const addData = ()=>{
-                set(push(ref(database, '/')), {
-                    name: document.getElementById('name').value,
-                    phone: document.getElementById('phone').value,
+    
+        submit.addEventListener('click', ()=>{
+            if(document.getElementById('name').value && document.getElementById('phone').value && document.getElementById('agree').checked==true){
+                get(child(ref(database), '/'+document.getElementById('phone').value+'/')).then((snapshot)=>{
+                    if(snapshot.exists() == true){
+                        alert('이미 등록한 번호입니다.');
+                    }
+                    else{
+                        addData();
+                    }
                 });
-                document.getElementById('plan').value="";
-                document.getElementById('plan').focus();  
+            }
+            else {
+                alert('이름, 전화 번호 또는 개인 정보 수집을 확인 해주세요');
+            }
+        });
+
+        const addData = ()=>{
+            set(ref(database, '/'+document.getElementById('phone').value), {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+            });
+            document.getElementById('name').value="";
+            document.getElementById('phone').value="";
+            document.getElementById('name').focus();  
         };
 
         const todo_delete = (e)=>{
             remove(ref(database, '/'+e.target.id));
         }
-
-        onValue(ref(database, "/"), (snapshot)=>{
-        document.getElementById('todo_list').innerHTML="";
-        snapshot.forEach((childSnapshot)=>{
-            let div = document.createElement('div');
-            div.setAttribute('class', 'card card-body mt-3');
-            div.setAttribute('id', 'div'+childSnapshot.key);
-            document.getElementById('todo_list').appendChild(div);
-
-            let div2 = document.createElement('div');
-            div2.setAttribute('id', 'div2'+childSnapshot.key);
-            document.getElementById('div'+childSnapshot.key).appendChild(div2);
-
-            let span = document.createElement('span');
-            let spanText = document.createTextNode(childSnapshot.val().todo);
-            span.appendChild(spanText);
-            document.getElementById('div2'+childSnapshot.key).appendChild(span);
-
-            btn.addEventListener('click', todo_delete);
-        });
-    });
     </script>
     
 </head>
@@ -92,7 +86,7 @@
             4. 본 내용/이용도의를 거부 할수 있습니다. 단, 거부시에는 온라인을 통한 사전 등록이 제한됩니다.
         </div>
     </div>
-    <input type="checkbox" id="agree">
+    <input type="checkbox" id="agree" onClick="console.log(document.getElementById('agree').checked);">
     <label for="agree">개인정보 수집/이용에 동의합니다.</label> 
     <button type="submit" id="submit">입장사전등록</button> 
 </body>
