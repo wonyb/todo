@@ -58,20 +58,19 @@
 		let day = firstDate.getDay();
 		let calendar = document.getElementById("calendar_table");
 		let week = Math.ceil(lastDate.getDate()/7) + 1;
-		// let row = calendar.insertRow();
 		
 		
 
 		function buildCalendar(){
-			let leftDays = 7; // setDays 와 반비례 
-			let setDays = 1;// leftDays 와 반비례 
+			let leftDays = 7; 
+			let setDays = 1;
 			for(i = 1; i < week; i++){
 				let row = calendar.insertRow();
 				while(day != 0){
 					row.insertCell().innerHTML = "";
 					day -= 1;
 					leftDays -= 1;
-				} // 1주
+				} 
 				let nextMonthDate = 1;
 				while(leftDays != 0){
 					if(setDays > lastDate.getDate()){
