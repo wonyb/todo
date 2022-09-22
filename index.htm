@@ -49,10 +49,6 @@
         const todo_delete = (e)=>{
             remove(ref(database, '/'+e.target.id));
         }
-       /* btnDelete.addEventListener('click', (e)=>{
-            remove(ref(database, '/'));
-        });
-*/
        onValue(ref(database, "/"), (snapshot)=>{
         document.getElementById('todo_list').innerHTML="";
         snapshot.forEach((childSnapshot)=>{
