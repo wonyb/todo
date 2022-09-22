@@ -30,8 +30,9 @@
         submit.addEventListener('click', (e)=>{
             if(document.getElementById('name').value && document.getElementById('phoneNumber').value){
                 get(child(ref(database), '/'+document.getElementById('phoneNumber').value)).then((snapshot)=>{
-                    if(snapshot.exists() && snapshot.val().name==document.getElementById('name').value){
-                        new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                    if(snapshot.exists() && snapshot.val().name==document.getElementById('name').value().name){
+                        document.getElementById('qrcode').innerHTML ="";
+                        new QRCode(document.getElementById("qrcode"), snapshot.key);
                     }
                     else{
                         alert('입력한 정보와 일치하는 예약내역이 없습니다.');
