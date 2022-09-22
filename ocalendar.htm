@@ -89,7 +89,81 @@
 		}
 		buildCalendar();
 
+        
 	</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove} from "https://www.gstatic.com/firebasejs/9.9.2/firebase-database.js";
+        const firebaseConfig = {
+          apiKey: "AIzaSyA1ZGALCip01oCMQ8Kc9Pv8ade4SECUG4Y",
+          authDomain: "todo-34196.firebaseapp.com",
+          databaseURL: "https://todo-34196-default-rtdb.firebaseio.com",
+          projectId: "todo-34196",
+          storageBucket: "todo-34196.appspot.com",
+          messagingSenderId: "25110643746",
+          appId: "1:25110643746:web:2d6cd898c6dd9e0f3ff67b"
+        };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        submit.addEventListener('click', (e)=>{
+            addData();
+        });
+
+        plan.addEventListener('keypress', (e)=>{
+            document.getElementById('inputAlert').style.display = "none";
+            if(e.keyCode==13){
+                addData();
+            }
+        });
+
+        const addData = ()=>{
+            if(document.getElementById('plan').value){
+                set(push(ref(database, '/')), {
+                    todo: document.getElementById('plan').value
+                });
+                document.getElementById('plan').value="";
+                document.getElementById('plan').focus();  
+            }
+            else{
+                document.getElementById('inputAlert').style.display = "block";
+            }
+        };
+
+        const todo_delete = (e)=>{
+            remove(ref(database, '/'+e.target.id));
+        }
+       onValue(ref(database, "/"), (snapshot)=>{
+        document.getElementById('todo_list').innerHTML="";
+        snapshot.forEach((childSnapshot)=>{
+            let div = document.createElement('div');
+            div.setAttribute('class', 'card card-body mt-3');
+            div.setAttribute('id', 'div'+childSnapshot.key);
+            document.getElementById('todo_list').appendChild(div);
+
+            let div2 = document.createElement('div');
+            div2.setAttribute('id', 'div2'+childSnapshot.key);
+            document.getElementById('div'+childSnapshot.key).appendChild(div2);
+
+            let span = document.createElement('span');
+            let spanText = document.createTextNode(childSnapshot.val().todo);
+            span.appendChild(spanText);
+            document.getElementById('div2'+childSnapshot.key).appendChild(span);
+
+
+            let btn = document.createElement('button');
+            let btnText = document.createTextNode('삭제');
+            btn.appendChild(btnText);
+            btn.setAttribute('type', 'button');
+            btn.setAttribute('class', 'btn btn-primary float-end');
+            btn.setAttribute('id', childSnapshot.key);
+            document.getElementById('div2'+childSnapshot.key).appendChild(btn);
+
+            btn.addEventListener('click', todo_delete);
+
+            });
+       });
+      </script>
     Toa tkfkdgody
 </body>
 </html>
